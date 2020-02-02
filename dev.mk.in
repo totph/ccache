@@ -201,6 +201,15 @@ shellcheck: test/suites/*.bash
 format:
 	$(CLANG_FORMAT) -i $(non_third_party_headers) $(non_third_party_sources) $(test_sources)
 
+.PHONY: check_format
+check_format:
+	@misc/run-clang-format.py --clang-format-executable="$(CLANG_FORMAT)" \
+	    $(non_third_party_headers) $(non_third_party_sources) $(test_sources) || \
+	{ ret=$$?; echo; \
+	  echo "Error: Code needs to be reformatted, run 'make format' or apply the patch above."; \
+	  exit $$ret; \
+	}
+
 # pip install compiledb
 compile_commands.json:
 	$(COMPILEDB) -n $(MAKE) all unittest
